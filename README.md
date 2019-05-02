@@ -3,7 +3,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-android-orange.svg)](https://github.com/smilefam/sendbird-videochat-android)
 [![Languages](https://img.shields.io/badge/language-java-orange.svg)](https://github.com/smilefam/sendbird-videochat-android)
-[![Maven](https://img.shields.io/badge/maven-v0.9.0-green.svg)](https://github.com/smilefam/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.0)
+[![Maven](https://img.shields.io/badge/maven-v0.9.1-green.svg)](https://github.com/smilefam/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.1)
 [![Commercial License](https://img.shields.io/badge/license-Commercial-brightgreen.svg)](https://github.com/smilefam/sendbird-videochat-android/blob/master/LICENSE.md)
 
 SendBird `VideoChat` is an add-on to your application that enables users to make video and audio calls. SendBird `VideoChat` is available through [WebRTC](https://webrtc.org/). 
@@ -23,7 +23,7 @@ Note: This is a beta version and is not yet open to all users. If you would like
     - [Timeout for `startCall()`](#timeout-for-startcall())
     - [Getting a `Call` instance](#getting-a-call-instance)
     - [Identifying the type of a message](#identifying-the-type-of-a-message)
-    - [Starting a call from a push notification](#starting-a-call-from-a-push-notification)
+    - [Taking an incoming video/audio call via a push notification](#taking-an-incoming-video/audio-call-via-a-push-notification)
 - [Classes](#classes)
     - [`SendBirdVideoChat`](#sendbirdvideochat)
     - [`SendBirdVideoView`](#sendbirdvideoview)
@@ -60,13 +60,13 @@ repositories {
 
 dependencies {
     // WebRTC
-    implementation 'org.webrtc:google-webrtc:1.0.26885'
+    implementation 'org.webrtc:google-webrtc:1.0.27306'
 
     // SendBird
-    implementation 'com.sendbird.sdk:sendbird-android-sdk:3.0.91'
+    implementation 'com.sendbird.sdk:sendbird-android-sdk:3.0.92'
 
     // VideoChat
-    implementation 'com.sendbird.sdk:sendbird-videochat:0.9.0'
+    implementation 'com.sendbird.sdk:sendbird-videochat:0.9.1'
 }
 ```
 
@@ -129,19 +129,11 @@ Like the SendBird SDKs, the `SendBirdVideoChat` has its own event handler. The `
 ```java
 SendBirdVideoChat.addVideoChatHandler("IDENTIFIER", new SendBirdVideoChat.VideoChatHandler() {
     @Override
-    public void onStartReceived(Call call) {
-    }
-
-    @Override
-    public void onAcceptReceived(Call call) {
-    }
-
-    @Override
-    public void onEndReceived(Call call) {
-    }
-
-    @Override
     public void onStartSent(Call call, UserMessage userMessage) {
+    }
+
+    @Override
+    public void onStartReceived(Call call) {
     }
 
     @Override
@@ -149,11 +141,19 @@ SendBirdVideoChat.addVideoChatHandler("IDENTIFIER", new SendBirdVideoChat.VideoC
     }
 
     @Override
-    public void onEndSent(Call call, UserMessage userMessage) {
+    public void onAcceptReceived(Call call) {
     }
 
     @Override
-    public void onConnected(Call call) {
+    public void onOpened(Call call) {
+    }
+
+    @Override
+    public void onDropped(Call call) {
+    }
+
+    @Override
+    public void onReopened(Call call) {
     }
 
     @Override
@@ -162,6 +162,14 @@ SendBirdVideoChat.addVideoChatHandler("IDENTIFIER", new SendBirdVideoChat.VideoC
 
     @Override
     public void onOpponentAudioStateChanged(Call call) {
+    }
+
+    @Override
+    public void onEndSent(Call call, UserMessage userMessage) {
+    }
+
+    @Override
+    public void onEndReceived(Call call) {
     }
 });
 
@@ -207,7 +215,7 @@ Using the `getRenderingMessageType()`, you can identify the type of a passed mes
 VideoChatType.RenderingMessageType renderingType = SendBirdVideoChat.getRenderingMessageType(message);
 ```
 
-### Starting a call from a push notification
+### Taking an incoming video/audio call via a push notification
 
 The following shows how to parse a notification message containing the `sendbird` payload and how to enable a video or audio call by using the information of the payload.
 
@@ -218,16 +226,12 @@ The following shows how to parse a notification message containing the `sendbird
 
 @Override
 public void onMessageReceived(RemoteMessage remoteMessage) {
-    ...
     String sendbird = remoteMessage.getData().get("sendbird");
-    JSONObject sendbirdObj = new JSONObject(sendbird);
-    JSONObject channel = (JSONObject) sendbirdObj.get("channel");
-    String channelUrl = channel.getString("channel_url");
-    if (channelUrl != null) {
+    if (sendbird != null) {
         if (SendBirdVideoChat.handleNotification(sendbird)) {
             Call call = SendBirdVideoChat.buildCallFromNotification(sendbird);
             if (call != null) {
-                // Start VideoChatActivity with callId. (call.getCallId())
+                // Start VideoChatActivity with `call.getCallId()`.
                 // Do getCall(callId) to get `Call` instance in VideoChatActivity.
             }
         } else {
@@ -247,33 +251,39 @@ The `VideoChatHandler` supports various methods which receive events callbacks f
 The following are provided with the `VideoChatHandler`:
 
 1. **onStartSent(Call call, UserMessage message)**
-    - Called when a caller's video or audio call request is successfully accepted by SendBird server from the `startCall()`. (At the caller's application) 
+    - Called when a caller's video or audio call request is successfully accepted by SendBird server from the `startCall()`. (At the caller's application)
     - **call**: a `Call` instance which contains the current call status.  
     - **message**: a `UserMessage` instance which contains the text sent with the call request.  
 2. **onStartReceived(Call call)**
     - Called when a callee receives a video or audio call request. (At the callee's application)  
     - **call**: a `Call` instance which contains the current call status.  
 3. **onAcceptSent(Call call)**
-    - Called when a callee has accepted a video or audio call request using the `accept()` and SendBird server confirms the acceptance. (At the callee's application)      
+    - Called when a callee has accepted a video or audio call request using the `accept()` and SendBird server confirms the acceptance. (At the callee's application)
     - **call**: a `Call` instance which contains the current call status.  
 4. **onAcceptReceived(Call call)**
-    - Called when TURN server starts a video or audio call delivery between a caller and callee. (At the caller's application)    
+    - Called when TURN server starts a video or audio call delivery between a caller and callee. (At the caller's application)
     - **call**: a `Call` instance which contains the current call status.  
 5. **onEndSent(Call call, UserMessage message)**
     - Called when a call close request has been sent to SendBird server using the `end()` and the server successfully accepts the request. (At the application which sent the close request)  
     - **call**: a `Call` instance which contains the current call status.  
     - **message**: a `UserMessage` instance which contains the text sent with the call close request.  
 6. **onEndReceived(Call call)**
-    - Called when a call has been closed from the opponent's request. (At the application which receives the close request)    
+    - Called when a call has been closed from the opponent's request. (At the application which receives the close request)
     - **call**: a `Call` instance which contains the current call status.  
-7. **onConnected(Call call)**
-    - Called when caller and callee are connected via SendBird server and can communicate with each other. (at both applications)   
+7. **onOpened(Call call)**
+    - Called when caller and callee are connected via SendBird server and can communicate with each other. (at both applications)
     - **call**: a `Call` instance which contains the current call status.  
-8. **onOpponentAudioStateChanged(Call call)**
-    - Called when the audio state of either a caller or callee has been changed. (Notifies the opposite application)    
+8. **onDropped(Call call)**
+    - Called when caller and callee are disconnected.
     - **call**: a `Call` instance which contains the current call status.  
-9. **onOpponentVideoStateChanged(Call call)**
-    - Called when the video state of either a caller or callee has been changed. (Notifies the opposite application) 
+9. **onReopened(Call call)**
+    - Called when caller and callee are reconnected.
+    - **call**: a `Call` instance which contains the current call status.  
+10. **onOpponentAudioStateChanged(Call call)**
+    - Called when the audio state of either a caller or callee has been changed. (Notifies the opposite application)
+    - **call**: a `Call` instance which contains the current call status.  
+11. **onOpponentVideoStateChanged(Call call)**
+    - Called when the video state of either a caller or callee has been changed. (Notifies the opposite application)
     - **call**: a `Call` instance which contains the current call status.  
 
 ### `SendBirdVideoView`
@@ -316,16 +326,18 @@ Through a `Call` instance, you can make actions of a video or audio call. It als
 - **isAudioCall()**: checks if the `Call` is an audio call.  
 - **getCaller()**: retrieves information of the `Caller`, the one who makes the call.  
 - **getCallee()**: retrieves information of the `Callee`, the one who receives the call.  
+- **getMyRole()**: retrieves the role on the `Call` as a `Caller` or `Callee`.
 - **getEnder()**: retrieves information of the `Caller` or `Callee`, the one who ends the call.
 - **getEndType()**: specifies that the `Call` has ended. This has one of the following values.
     - **NONE**: it's not ended yet.
     - **END**: a `Caller` or `Callee` ended the video or audio call after the connection.
     - **CANCEL**: the `end()`called by the `Caller` before `Callee` accepts the `Call`.
     - **DECLINE**: the `end()` called by the `Callee` without accepting the `Call`.
-    - **TIMEOUT**: the `Call` was closed when a `Callee` didn't respond to a call request.
+    - **CONNECT_TIMEOUT**: the `Call` was closed when a `Callee` didn't respond to a call request.
+    - **RECONNECT_TIMEOUT**: the `Call` was closed for reconnection timeout.
     - **UNKNOWN**: the `Call` was closed for unknown reasons.
 - **getPeriod()**: retrieves the length of time in unix timestamp for `Call`.
-- **getMyRole()**: retrieves the role on the `Call` as a `Caller` or `Callee`.
+- **getOperationMode()**: retrieves operation mode.
 - **accept()**: the `Callee` accepts the `Call`.
 - **end()**: close the `Call`.
 - **startVideo()**: calls the `onOpponentVideoStateChanged()` handler that you registered to start video streaming on the `Call`.
@@ -336,19 +348,9 @@ Through a `Call` instance, you can make actions of a video or audio call. It als
 ```java
 SendBirdVideoChat.addVideoChatHandler("IDENTIFIER", new SendBirdVideoChat.VideoChatHandler() {
     @Override
-    public void onStartReceived(Call call) {
-        // Decline a call
-        call.end(new Call.EndCallHandler() {
-            @Override
-            public void onResult(SendBirdException e) {
-            }
-        });
-    }
-
-    @Override
     public void onStartSent(Call call, UserMessage userMessage) {
         // Cancel a call
-        call.end(new Call.EndCallHandler() {
+        call.end(new Call.EndHandler() {
             @Override
             public void onResult(SendBirdException e) { 
             }
@@ -356,9 +358,19 @@ SendBirdVideoChat.addVideoChatHandler("IDENTIFIER", new SendBirdVideoChat.VideoC
     }
 
     @Override
-    public void onConnected(Call call) {
+    public void onStartReceived(Call call) {
+        // Decline a call
+        call.end(new Call.EndHandler() {
+            @Override
+            public void onResult(SendBirdException e) {
+            }
+        });
+    }
+
+    @Override
+    public void onOpened(Call call) {
         // End a call
-        call.end(new Call.EndCallHandler() {
+        call.end(new Call.EndHandler() {
             @Override
             public void onResult(SendBirdException e) {
             }
@@ -379,9 +391,9 @@ call.unmuteMicrophone();
 
 `CallUser` can be identified as a `Caller` or `Callee`. The `Caller` is the one who requests a call and the `Callee` is the one who receives a call request.
 
-- **getUserId()**: retrieve the user ID of the `Caller` or `Callee`.  
-- **getNickname()**: retrieve the nickname of the `Caller` or `Callee`.  
-- **getProfileUrl()**: retrieve the profile URL of the `Caller` or `Callee`.
+- **getUserId()**: retrieves the user ID of the `Caller` or `Callee`.  
+- **getNickname()**: retrieves the nickname of the `Caller` or `Callee`.  
+- **getProfileUrl()**: retrieves the profile URL of the `Caller` or `Callee`.
 - **isVideoEnabled()**: indicates whether the `Caller` or `Callee` is using video.  
 - **isAudioEnabled()**: indicates whether the `Caller` or `Callee` is using audio.  
 
@@ -400,7 +412,7 @@ public class VideoChatType {
     }
 
     public enum EndType {
-        NONE, END, CANCEL, DECLINE, TIMEOUT, UNKNOWN
+        NONE, END, CANCEL, DECLINE, CONNECT_TIMEOUT, RECONNECT_TIMEOUT, UNKNOWN
     }
 }
 ```
