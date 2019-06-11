@@ -1,10 +1,10 @@
 
 # SendBird VideoChat for Android
 
-[![Platform](https://img.shields.io/badge/platform-android-orange.svg)](https://github.com/smilefam/sendbird-videochat-android)
-[![Languages](https://img.shields.io/badge/language-java-orange.svg)](https://github.com/smilefam/sendbird-videochat-android)
-[![Maven](https://img.shields.io/badge/maven-v0.9.1-green.svg)](https://github.com/smilefam/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.1)
-[![Commercial License](https://img.shields.io/badge/license-Commercial-brightgreen.svg)](https://github.com/smilefam/sendbird-videochat-android/blob/master/LICENSE.md)
+[![Platform](https://img.shields.io/badge/platform-android-orange.svg)](https://github.com/sendbird/sendbird-videochat-android)
+[![Languages](https://img.shields.io/badge/language-java-orange.svg)](https://github.com/sendbird/sendbird-videochat-android)
+[![Maven](https://img.shields.io/badge/maven-v0.9.1-green.svg)](https://github.com/sendbird/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.1)
+[![Commercial License](https://img.shields.io/badge/license-Commercial-brightgreen.svg)](https://github.com/sendbird/sendbird-videochat-android/blob/master/LICENSE.md)
 
 SendBird `VideoChat` is an add-on to your application that enables users to make video and audio calls. SendBird `VideoChat` is available through [WebRTC](https://webrtc.org/). 
 
@@ -32,8 +32,8 @@ Note: This is a beta version and is not yet open to all users. If you would like
     - [`CallUser`](#calluser)
     - [`VideoChatType`](#videochattype)
     - [`VideoChatError`](#Videochaterror)
-- [Change Log](https://github.com/smilefam/sendbird-videochat-android/blob/master/CHANGELOG.md)
-- [License](https://github.com/smilefam/sendbird-videochat-android/blob/master/LICENSE.md)
+- [Change Log](https://github.com/sendbird/sendbird-videochat-android/blob/master/CHANGELOG.md)
+- [License](https://github.com/sendbird/sendbird-videochat-android/blob/master/LICENSE.md)
 
 ## How to set and initialize `VideoChat`
 
@@ -55,7 +55,7 @@ android {
 }
 
 repositories {
-    maven { url "https://raw.githubusercontent.com/smilefam/sendbird-videochat-android/master/" }
+    maven { url "https://raw.githubusercontent.com/sendbird/sendbird-videochat-android/master/" }
 }
 
 dependencies {
@@ -70,7 +70,7 @@ dependencies {
 }
 ```
 
-> Note: `VideoChat` SDK is predicated upon the [SendBird Android SDK](https://github.com/smilefam/SendBird-SDK-Android) at least version 3.0.91. If you don't have the Android SDK, you should install it first.
+> Note: `VideoChat` SDK is predicated upon the [SendBird Android SDK](https://github.com/sendbird/SendBird-SDK-Android) at least version 3.0.91. If you don't have the Android SDK, you should install it first.
 
 ### AndroidManifest.xml
 
