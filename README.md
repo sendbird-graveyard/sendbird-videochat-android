@@ -3,7 +3,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-android-orange.svg)](https://github.com/sendbird/sendbird-videochat-android)
 [![Languages](https://img.shields.io/badge/language-java-orange.svg)](https://github.com/sendbird/sendbird-videochat-android)
-[![Maven](https://img.shields.io/badge/maven-v0.9.2-green.svg)](https://github.com/sendbird/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.2)
+[![Maven](https://img.shields.io/badge/maven-v0.9.3-green.svg)](https://github.com/sendbird/sendbird-videochat-android/tree/master/com/sendbird/sdk/sendbird-videochat/0.9.3)
 [![Commercial License](https://img.shields.io/badge/license-Commercial-brightgreen.svg)](https://github.com/sendbird/sendbird-videochat-android/blob/master/LICENSE.md)
 
 SendBird `VideoChat` is an add-on to your application that enables users to make video and audio calls. SendBird `VideoChat` is available through [WebRTC](https://webrtc.org/). 
@@ -60,13 +60,13 @@ repositories {
 
 dependencies {
     // WebRTC
-    implementation 'org.webrtc:google-webrtc:1.0.27306'
+    implementation 'org.webrtc:google-webrtc:1.0.28513'
 
     // SendBird
-    implementation 'com.sendbird.sdk:sendbird-android-sdk:3.0.97'
+    implementation 'com.sendbird.sdk:sendbird-android-sdk:3.0.98'
 
     // VideoChat
-    implementation 'com.sendbird.sdk:sendbird-videochat:0.9.2'
+    implementation 'com.sendbird.sdk:sendbird-videochat:0.9.3'
 }
 ```
 
