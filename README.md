@@ -1,4 +1,5 @@
-
+**We officially have lauched Sendbird Calls! Please visit the [new SDK](https://github.com/sendbird/sendbird-calls-android).**  </br></br>
+  
 # SendBird VideoChat for Android
 
 [![Platform](https://img.shields.io/badge/platform-android-orange.svg)](https://github.com/sendbird/sendbird-videochat-android)
